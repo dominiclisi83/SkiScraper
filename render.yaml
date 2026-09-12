@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: skiscraper
+    runtime: python
+    plan: free
+    buildCommand: pip install .
+    startCommand: uvicorn skiscraper.web:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
