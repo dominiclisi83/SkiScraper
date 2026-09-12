@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .db import Database
-from .providers import DemoProvider, Provider
+from .providers import DemoProvider, Provider, SkiworldProvider
 from .scoring import score_market
 
 
@@ -22,3 +22,11 @@ def run(db: Database, providers: list[Provider] | None = None) -> dict[str, int]
             deal_count += 1
     return {"searches": len(searches), "listings": listing_count, "deals": deal_count}
 
+
+def named_providers(names: str) -> list[Provider]:
+    registry = {"demo": DemoProvider, "skiworld": SkiworldProvider}
+    requested = [name.strip().casefold() for name in names.split(",") if name.strip()]
+    unknown = set(requested) - registry.keys()
+    if unknown:
+        raise ValueError(f"Unknown providers: {', '.join(sorted(unknown))}")
+    return [registry[name]() for name in requested]
