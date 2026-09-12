@@ -17,6 +17,7 @@ jobs:
       - run: pip install .
       - name: Run collectors and score deals
         env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SKISCRAPER_PROVIDERS: skiworld,skisolutions
           SKISCRAPER_SEED_RESORT: Val Thorens
           SKISCRAPER_SEED_CHECK_IN: "2027-01-30"
