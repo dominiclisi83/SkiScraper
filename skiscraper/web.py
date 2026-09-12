@@ -1,21 +1,39 @@
 from __future__ import annotations
 
 import os
+import secrets
 from datetime import date
 
-from fastapi import FastAPI, Form
+from fastapi import Depends, FastAPI, Form, HTTPException, status
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from .db import Database
 from .models import SearchConfig
 
 app = FastAPI(title="SkiScraper", version="0.1.0")
+security = HTTPBasic(auto_error=False)
 
 
 def get_db() -> Database:
-    db = Database(os.getenv("SKISCRAPER_DB", "data/skiscraper.db"))
+    db = Database(os.getenv("DATABASE_URL", os.getenv("SKISCRAPER_DB", "data/skiscraper.db")))
     db.initialise()
     return db
+
+
+def require_admin(credentials: HTTPBasicCredentials | None = Depends(security)) -> None:
+    password = os.getenv("ADMIN_PASSWORD")
+    if not password:
+        return
+    valid = credentials is not None and secrets.compare_digest(
+        credentials.password.encode(), password.encode()
+    )
+    if not valid:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required",
+            headers={"WWW-Authenticate": "Basic"},
+        )
 
 
 def page(body: str) -> HTMLResponse:
@@ -44,7 +62,7 @@ def dashboard() -> HTMLResponse:
     return page(f"<h1>Best ski deals</h1><table><tr><th>Property</th><th>Resort</th><th>Total</th><th>Below peers</th><th>Deal</th><th>Confidence</th></tr>{rows}</table>")
 
 
-@app.get("/config", response_class=HTMLResponse)
+@app.get("/config", response_class=HTMLResponse, dependencies=[Depends(require_admin)])
 def config() -> HTMLResponse:
     searches = get_db().list_searches()
     cards = "".join(
@@ -66,7 +84,7 @@ def config() -> HTMLResponse:
     return page(form + cards)
 
 
-@app.post("/config")
+@app.post("/config", dependencies=[Depends(require_admin)])
 def add_config(name: str = Form(), resort: str = Form(), check_in: date = Form(),
                nights: int = Form(), adults: int = Form(), children: int = Form(0),
                bedrooms: int = Form(1), max_distance_m: int = Form(1500),
