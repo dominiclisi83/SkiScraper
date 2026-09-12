@@ -1,0 +1,28 @@
+name: Scheduled accommodation scan
+on:
+  schedule:
+    - cron: "30 5 * * *"
+  workflow_dispatch:
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install .
+      - name: Run collectors and score deals
+        run: |
+          skiscraper init
+          skiscraper seed
+          skiscraper run
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ski-deal-report
+          path: reports/latest.html
+          retention-days: 14
+
