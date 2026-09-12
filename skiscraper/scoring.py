@@ -16,6 +16,7 @@ def comparable(a: Listing, b: Listing) -> bool:
         and abs(a.quality - b.quality) <= 0.75
         and abs(a.distance_to_lift_m - b.distance_to_lift_m) <= 750
         and a.capacity == b.capacity
+        and a.price_basis == b.price_basis
         and (a.board_basis == b.board_basis or "any" in {a.board_basis, b.board_basis})
     )
 
@@ -40,4 +41,3 @@ def score_listing(listing: Listing, market: list[Listing]) -> Deal | None:
 
 def score_market(listings: list[Listing]) -> list[Deal]:
     return [deal for listing in listings if (deal := score_listing(listing, listings))]
-
