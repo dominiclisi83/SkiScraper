@@ -13,7 +13,7 @@ from .reporting import write_html_report
 def main() -> None:
     parser = argparse.ArgumentParser(prog="skiscraper")
     parser.add_argument("command", choices=["init", "seed", "run"])
-    parser.add_argument("--db", default="data/skiscraper.db")
+    parser.add_argument("--db", default=os.getenv("DATABASE_URL", "data/skiscraper.db"))
     args = parser.parse_args()
     db = Database(args.db)
     db.initialise()
