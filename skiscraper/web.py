@@ -37,7 +37,7 @@ def health() -> dict[str, str]:
 def dashboard() -> HTMLResponse:
     deals = get_db().latest_deals()
     rows = "".join(
-        f"<tr><td>{d['property_name']}</td><td>{d['resort']}</td><td>£{d['total_price']}</td>"
+        f"<tr><td>{d['property_name']}</td><td>{d['resort']}</td><td>{d['currency']} {d['total_price']}</td>"
         f"<td>{d['discount_percent']:.1f}%</td><td>{d['classification']}</td><td>{d['confidence']}</td></tr>"
         for d in deals
     ) or "<tr><td colspan='6'>No results yet. Add a search and run the collector.</td></tr>"
@@ -74,4 +74,3 @@ def add_config(name: str = Form(), resort: str = Form(), check_in: date = Form()
     get_db().add_search(SearchConfig(None, name, resort, check_in, nights, adults, children,
                                      bedrooms, max_distance_m, min_quality, board_basis))
     return RedirectResponse("/config", status_code=303)
-
