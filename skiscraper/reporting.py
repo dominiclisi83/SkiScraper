@@ -10,7 +10,7 @@ def write_html_report(db: Database, path: str = "reports/latest.html") -> Path:
     deals = db.latest_deals()
     rows = "".join(
         f"<tr><td>{escape(d['property_name'])}</td><td>{escape(d['resort'])}</td>"
-        f"<td>£{escape(d['total_price'])}</td><td>{d['discount_percent']:.1f}%</td>"
+        f"<td>{escape(d['currency'])} {escape(d['total_price'])}</td><td>{d['discount_percent']:.1f}%</td>"
         f"<td>{escape(d['classification'].title())}</td><td>{escape(d['confidence'])}</td></tr>"
         for d in deals
     )
@@ -25,4 +25,3 @@ th{{background:#102a43;color:white}}</style></head><body><h1>SkiScraper deals</h
         encoding="utf-8",
     )
     return output
-
