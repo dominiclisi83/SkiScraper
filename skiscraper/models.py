@@ -43,6 +43,8 @@ class Listing:
     cancellable: bool
     booking_url: str
     observed_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    price_basis: str = "accommodation"
+    inclusions: tuple[str, ...] = ()
 
     @property
     def price_per_person_night(self) -> Decimal:
