@@ -10,6 +10,7 @@ three villages away is not crowned the bargain of the century.
 - Append-only SQLite price observations
 - Pluggable provider interface
 - Deterministic demo provider for end-to-end testing
+- Live Skiworld collector for Val Thorens UK packages (hotels and apartments)
 - Comparable-property filtering by resort, date, type, quality, lift distance, occupancy and board
 - Explainable discount, classification and confidence
 - HTML dashboard and report
@@ -17,6 +18,11 @@ three villages away is not crowned the bargain of the century.
 
 The demo provider is intentional: live travel sites require a provider-specific review of their
 API, affiliate programme, robots policy and terms before enabling collection.
+
+The scheduled workflow uses Skiworld's public resort listings. Package prices are labelled and
+only compared with other packages on the same date, for the same party size, accommodation type,
+quality band, board basis and approximate slope proximity. Flights/transfers are retained as
+inclusions rather than silently treated as accommodation-only pricing.
 
 ## Run locally
 
@@ -31,6 +37,8 @@ uvicorn skiscraper.web:app --reload
 ```
 
 Open <http://127.0.0.1:8000>. Alternatively run `docker compose up --build`.
+
+Run the live provider with `SKISCRAPER_PROVIDERS=skiworld skiscraper run`.
 
 ## Architecture
 
@@ -57,4 +65,3 @@ small and prevents provider code from knowing where results are stored.
 - Prefer official APIs and affiliate feeds.
 - Store total price and inclusions, not only an advertised nightly rate.
 - Do not alert on a deal with fewer than two comparable properties.
-
