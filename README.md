@@ -42,6 +42,14 @@ Open <http://127.0.0.1:8000>. Alternatively run `docker compose up --build`.
 Run both live providers with
 `SKISCRAPER_PROVIDERS=skiworld,skisolutions skiscraper run`.
 
+## Free hosted deployment
+
+The app supports SQLite locally and PostgreSQL when `DATABASE_URL` is set. Deploy the included
+Render Blueprint, set `DATABASE_URL` to a Neon connection string and set `ADMIN_PASSWORD` to a
+strong password. The dashboard remains public; `/config` requires HTTP Basic authentication.
+Add the same `DATABASE_URL` as a GitHub Actions repository secret so scheduled collectors and the
+dashboard share searches and results.
+
 ## Architecture
 
 ```text
